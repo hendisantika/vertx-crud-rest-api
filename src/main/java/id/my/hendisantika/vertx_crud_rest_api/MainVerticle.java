@@ -2,22 +2,30 @@ package id.my.hendisantika.vertx_crud_rest_api;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 public class MainVerticle extends AbstractVerticle {
+  private static final String SERVICE_ADDRESS = "crud.service";
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    vertx.createHttpServer().requestHandler(req -> {
-      req.response()
-        .putHeader("content-type", "text/plain")
-        .end("Hello from Vert.x!");
-    }).listen(8888).onComplete(http -> {
-      if (http.succeeded()) {
-        startPromise.complete();
-        System.out.println("HTTP server started on port 8888");
-      } else {
-        startPromise.fail(http.cause());
-      }
+    Router router = Router.router(vertx);
+
+    // Body handler for parsing request bodies
+    router.route().handler(BodyHandler.create());
+
+    // GET endpoint for reading all items
+    router.get("/items").handler(rc -> {
+      vertx.eventBus().<JsonArray>request(SERVICE_ADDRESS, new JsonObject(), reply -> {
+        if (reply.succeeded()) {
+          rc.response().end(reply.result().body().encode());
+        } else {
+          rc.fail(500);
+        }
+      });
     });
   }
 }
