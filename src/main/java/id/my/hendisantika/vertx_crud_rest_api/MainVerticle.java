@@ -27,5 +27,17 @@ public class MainVerticle extends AbstractVerticle {
         }
       });
     });
+
+    // POST endpoint for creating new items
+    router.post("/items").handler(rc -> {
+      JsonObject item = rc.getBodyAsJson();
+      vertx.eventBus().<JsonObject>request(SERVICE_ADDRESS, item, reply -> {
+        if (reply.succeeded()) {
+          rc.response().end(reply.result().body().encode());
+        } else {
+          rc.fail(500);
+        }
+      });
+    });
   }
 }
