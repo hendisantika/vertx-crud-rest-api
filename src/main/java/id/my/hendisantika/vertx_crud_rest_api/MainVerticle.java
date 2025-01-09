@@ -52,5 +52,20 @@ public class MainVerticle extends AbstractVerticle {
         }
       });
     });
+
+    // DELETE endpoint for deleting items
+    router.delete("/items/:id").handler(rc -> {
+      String id = rc.request().getParam("id");
+      JsonObject message = new JsonObject().put("action", "delete").put("id", id);
+      vertx.eventBus().<Void>request(SERVICE_ADDRESS, message, reply -> {
+        if (reply.succeeded()) {
+          rc.response().end();
+        } else {
+          rc.fail(500);
+        }
+      });
+    });
+
+    vertx.createHttpServer().requestHandler(router).listen(8080);
   }
 }
