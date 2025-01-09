@@ -39,5 +39,18 @@ public class MainVerticle extends AbstractVerticle {
         }
       });
     });
+
+    // PUT endpoint for updating items
+    router.put("/items/:id").handler(rc -> {
+      String id = rc.request().getParam("id");
+      JsonObject item = rc.getBodyAsJson().put("id", id);
+      vertx.eventBus().<JsonObject>request(SERVICE_ADDRESS, item, reply -> {
+        if (reply.succeeded()) {
+          rc.response().end(reply.result().body().encode());
+        } else {
+          rc.fail(500);
+        }
+      });
+    });
   }
 }
