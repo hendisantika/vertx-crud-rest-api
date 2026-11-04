@@ -20,7 +20,7 @@
     <junit-jupiter.version>6.1.3</junit-jupiter.version>
 
     <main.verticle>id.my.hendisantika.vertx_crud_rest_api.MainVerticle</main.verticle>
-    <launcher.class>io.vertx.core.Launcher</launcher.class>
+    <launcher.class>io.vertx.launcher.application.VertxApplication</launcher.class>
   </properties>
 
   <dependencyManagement>
@@ -43,6 +43,10 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-launcher-application</artifactId>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -115,7 +119,6 @@
         <configuration>
           <mainClass>${launcher.class}</mainClass>
           <arguments>
-            <argument>run</argument>
             <argument>${main.verticle}</argument>
           </arguments>
         </configuration>
